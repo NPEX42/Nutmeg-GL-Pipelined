@@ -1,6 +1,6 @@
 #version 330 core
 out vec4 v_PixelColor;
-
+uniform vec4 u_TintColor;
 void main() {
-	v_PixelColor = vec4(0.0,0.0,0.0,1.0);
+	v_PixelColor = u_TintColor;
 }

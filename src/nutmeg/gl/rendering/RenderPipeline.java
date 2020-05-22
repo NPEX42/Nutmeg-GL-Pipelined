@@ -46,6 +46,11 @@ public abstract class RenderPipeline {
 		currentModel = new VertexArray();
 		pipeline = ShaderPipeline.BuildFromExtFile("res/shaders/geom.v.glsl", "res/shaders/geom.f.glsl");
 		if(pipeline == null) throw new RuntimeException("Unable To Build Shader Pipeline!");
+		
+		proj = new Matrix4f();
+		model = new Matrix4f();
+		view = new Matrix4f();
+		
 	}
 	
 	//=======================================================================================================================
@@ -105,6 +110,11 @@ public abstract class RenderPipeline {
 		if(indicesBuffer != null && positionBuffer != null) {
 			currentModel.Bind();
 			pipeline.Bind();
+			Matrix4f mvp = new Matrix4f();
+			mvp = mvp.mul(proj);
+			mvp = mvp.mul(view);
+			mvp = mvp.mul(model);
+			pipeline.SetValue("u_MVP", mvp);
 			glDrawElements(mode, indicesBuffer.length, NM_UINT32, 0);
 		} else {
 			throw new RuntimeException("Index Buffer OR Position Buffer has not been setup!");
@@ -142,7 +152,7 @@ public abstract class RenderPipeline {
 	
 	//=======================================================================================================================
 	
-	public void SetValue(String name, Color c) {}
+	public void SetValue(String name, Color c) {pipeline.Bind(); pipeline.SetValue(name, new Vector4f(c.getRed() / 255f, c.getGreen() / 255f, c.getBlue() / 255f, c.getAlpha() / 255f));}
 	public void SetValue(String name, Texture2D texture, int slot) {}
 	
 	//=======================================================================================================================

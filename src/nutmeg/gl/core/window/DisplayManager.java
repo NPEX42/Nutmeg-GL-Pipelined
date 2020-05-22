@@ -47,4 +47,8 @@ public final class DisplayManager {
 	public static final int getHeight() {
 		return height;
 	}
+	
+	public static final long getWindowID() {
+		return windowID;
+	}
 }
