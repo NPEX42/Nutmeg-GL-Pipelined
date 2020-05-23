@@ -20,6 +20,7 @@ import org.joml.Vector4f;
 import nutmeg.gl.core.IO;
 
 import static nutmeg.gl.Nutmeg.*;
+@SuppressWarnings("unused")
 public class ShaderPipeline {
 	private int programID, vertexID, fragmentID;
 	

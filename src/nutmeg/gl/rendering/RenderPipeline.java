@@ -10,7 +10,7 @@ import static nutmeg.gl.Nutmeg.*;
 import nutmeg.gl.rendering.buffers.IndexBuffer;
 import nutmeg.gl.rendering.buffers.VertexArray;
 import nutmeg.gl.rendering.buffers.VertexBuffer;
-
+@SuppressWarnings("unused")
 public abstract class RenderPipeline {
 	
 	//=======================================================================================================================
@@ -59,7 +59,7 @@ public abstract class RenderPipeline {
 		proj = new Matrix4f().perspective(fov, width / height, near, far);
 	}
 	
-	public void SetOrthographic(float height, float width, float near, float far) {
+	public void SetOrthographic(float width, float height, float near, float far) {
 		proj = new Matrix4f().ortho(0, width, height, 0, near, far);
 	}
 	
@@ -153,7 +153,12 @@ public abstract class RenderPipeline {
 	//=======================================================================================================================
 	
 	public void SetValue(String name, Color c) {pipeline.Bind(); pipeline.SetValue(name, new Vector4f(c.getRed() / 255f, c.getGreen() / 255f, c.getBlue() / 255f, c.getAlpha() / 255f));}
-	public void SetValue(String name, Texture2D texture, int slot) {}
+	public void SetValue(String name, Texture2D texture, int slot) {
+		pipeline.Bind();
+		texture.Bind();
+		texture.SetSlot(slot);
+		pipeline.SetValue(name, slot);
+	}
 	
 	//=======================================================================================================================
 	
