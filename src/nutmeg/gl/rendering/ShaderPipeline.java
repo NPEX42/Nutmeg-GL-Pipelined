@@ -110,7 +110,7 @@ public class ShaderPipeline {
 			return uniformCache.get(name);
 		} else {
 			int loc = glGetUniformLocation(programID, name);
-			if(loc == -1) System.err.println("Couldn't Load Uniform '"+name+"'");
+			if(loc == -1 && NM_DEBUG_MODE) System.err.println("Couldn't Load Uniform '"+name+"'");
 			if(loc > -1) uniformCache.put(name, loc);
 			return loc;
 		}
@@ -137,4 +137,8 @@ public class ShaderPipeline {
 	public void SetValue(String name, Matrix4f mat) {
 		glUniformMatrix4fv(getUniform(name), false, mat.get(new float[16]));
 	} 
+	
+	public void Delete() {
+		glDeleteProgram(programID);
+	}
 }

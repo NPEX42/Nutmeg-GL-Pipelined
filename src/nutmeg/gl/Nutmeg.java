@@ -40,7 +40,13 @@ public class Nutmeg {
 	
 
 	NM_FRAGMENT_SHADER = GL_FRAGMENT_SHADER,
-	NM_VERTEX_SHADER = GL_VERTEX_SHADER;
+	NM_VERTEX_SHADER = GL_VERTEX_SHADER,
+	
+	NM_ALBEDO = 0,
+	NM_NORMAL_MAP = 1,
+	NM_SPECULAR_MAP = 2,
+	
+	NM_TRIANGLES = GL_TRIANGLES;
 	
 	public static final Vector3f 
 	NM_POS_X = new Vector3f(1,0,0),
@@ -50,5 +56,7 @@ public class Nutmeg {
 	NM_NEG_X = new Vector3f(-1,0,0),
 	NM_NEG_Y = new Vector3f(0,-1,0),
 	NM_NEG_Z = new Vector3f(0,0,-1); 
+	
+	public static boolean NM_DEBUG_MODE = false;
 
 }

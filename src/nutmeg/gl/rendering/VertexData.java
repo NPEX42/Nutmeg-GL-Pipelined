@@ -18,6 +18,13 @@ public class VertexData {
 		this.indices = indices;
 	}
 	
+	public VertexData() {
+		vertexPositions = new float[1];
+		normals = new float[1];
+		textureCoords = new float[1];
+		indices = new int[1];
+	}
+	
 	public final float[] getVertexPositions() {
 		return vertexPositions;
 	}
@@ -51,6 +58,21 @@ public class VertexData {
 		indices = combine(indices, _data.indices);
 	}
 	
+	public void addVertexPositions(float[] data) {
+		vertexPositions = combine(vertexPositions, data);
+	}
+	
+	public void addNormals(float[] data) {
+		normals = combine(normals, data);
+	}
+	
+	public void addTextureCoords(float[] data) {
+		textureCoords = combine(textureCoords, data);
+	}
+	
+	public void addIndices(int[] data) {
+		indices = combine(indices, data);
+	}
 	public int[] combine(int[] a, int[] b){
         int length = a.length + b.length;
         int[] result = new int[length];

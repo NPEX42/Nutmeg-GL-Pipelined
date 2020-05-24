@@ -6,5 +6,6 @@ public class VertexArray {
 		ID = glGenVertexArrays();
 	}
 	
-	public void Bind() { glBindVertexArray(ID); }
-}
+	public void Bind  () { glBindVertexArray(ID);    }
+	public void Delete() { glDeleteVertexArrays(ID); }
+ }

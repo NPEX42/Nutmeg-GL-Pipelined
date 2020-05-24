@@ -6,7 +6,7 @@ public final class DisplayManager {
 	public static final int 
 		NM_DEFAULT = 0;
 	private static long windowID;
-	private static int width, height;
+	private static float width, height;
 	
 	public static void Open(int _width, int _height, String _title, boolean _EnableVsync)  {
 		if(!glfwInit() || windowID != 0) throw new RuntimeException("Unable To Open window...");
@@ -40,15 +40,20 @@ public final class DisplayManager {
 		return !glfwWindowShouldClose(windowID);
 	}
 
-	public static final int getWidth() {
+	public static final float getWidth() {
 		return width;
 	}
 
-	public static final int getHeight() {
+	public static final float getHeight() {
 		return height;
 	}
 	
 	public static final long getWindowID() {
 		return windowID;
 	}
+	
+	public static void SetTitle(String _title) {
+		//System.err.println("Debug--"+_title);
+		glfwSetWindowTitle(windowID, _title);
+	} 
 }
