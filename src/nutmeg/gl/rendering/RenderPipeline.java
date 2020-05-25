@@ -5,47 +5,60 @@ import java.awt.Color;
 
 import org.joml.*;
 
+import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL46.*;
 import static nutmeg.gl.Nutmeg.*;
 import nutmeg.gl.rendering.buffers.IndexBuffer;
 import nutmeg.gl.rendering.buffers.VertexArray;
 import nutmeg.gl.rendering.buffers.VertexBuffer;
-
+@SuppressWarnings("unused")
 public abstract class RenderPipeline {
 	
 	//=======================================================================================================================
-	private int mode = GL_TRIANGLES;
+	protected int mode = GL_TRIANGLES;
+	private boolean usesDepth = false;
+	protected Matrix4f proj, view, model;
 	
-	private Matrix4f proj, view, model;
+	protected VertexData currentData;
 	
-	private float[]
+	protected float[]
 		vertexPositions, //Holds 3D OpenGL-Coordinate Positions
 		normals, //Holds Normals
 		textureCoords; //Holds UV / SV
 	
-	private int[] 
+	protected int[] 
 		indices; //Maps triangles
 	
-	private Texture2D 
+	protected Texture2D 
 		albedo; //Holds the main 'Diffuse' Texture
 	
-	private ShaderPipeline
+	protected ShaderPipeline
 		pipeline; //The Main Shader Pipeline
 	
-	private VertexArray currentModel; //Holds A Reference to the current OpenGL Model
+	protected VertexArray currentModel; //Holds A Reference to the current OpenGL Model
 	
-	private VertexBuffer 
+	protected VertexBuffer 
 		positionBuffer,
 		texCoordBuffer,
 		normalBuffer;
 	
-	private IndexBuffer indicesBuffer;
+	protected IndexBuffer indicesBuffer;
 	
-	public RenderPipeline(int _mode) {
+	public RenderPipeline(int _mode, String[] _shaderPaths) {
+		
 		mode = _mode;
 		currentModel = new VertexArray();
-		pipeline = ShaderPipeline.BuildFromExtFile("res/shaders/geom.v.glsl", "res/shaders/geom.f.glsl");
-		if(pipeline == null) throw new RuntimeException("Unable To Build Shader Pipeline!");
+		//pipeline = ShaderPipeline.BuildFromExtFile("res/shaders/geom.v.glsl", "res/shaders/geom.f.glsl");
+		pipeline = ShaderPipeline.BuildFromIntFile(RenderPipeline.class.getClassLoader(), _shaderPaths[0], _shaderPaths[1]);
+		if(pipeline == null) pipeline = ShaderPipeline.BuildFromExtFile(_shaderPaths[0], _shaderPaths[1]);
+		if(pipeline == null) System.err.println("Unable To Create Shader from " +_shaderPaths[0] + " (VS) and  "+ _shaderPaths[1] + " (FS)");
+		
+		proj = new Matrix4f();
+		model = new Matrix4f();
+		view = new Matrix4f();
+		
+		currentData = new VertexData(null, null, null, null);
 	}
 	
 	//=======================================================================================================================
@@ -54,7 +67,7 @@ public abstract class RenderPipeline {
 		proj = new Matrix4f().perspective(fov, width / height, near, far);
 	}
 	
-	public void SetOrthographic(float height, float width, float near, float far) {
+	public void SetOrthographic(float width, float height, float near, float far) {
 		proj = new Matrix4f().ortho(0, width, height, 0, near, far);
 	}
 	
@@ -77,8 +90,20 @@ public abstract class RenderPipeline {
 		view = temp.invert();
 	}
 	
-	public void SetAlbedo(Texture2D _albedo) {}
-	public void SetTextureCoords(float[] _textureCoords) {}
+	public void SetAlbedo(Texture2D _albedo) {
+		if(_albedo != null) {
+			SetValue("t_Albedo", _albedo, NM_ALBEDO);
+		} else {
+			SetValue("t_Albedo", Texture2D.GetWhiteTex(), NM_ALBEDO);
+		}
+	}
+	
+	public void SetTextureCoords(float[] _textureCoords) {
+		currentModel.Bind();
+		if(texCoordBuffer != null) texCoordBuffer.Delete();
+		texCoordBuffer = VertexBuffer.Create(NM_UV, _textureCoords, NM_VEC2);
+		System.err.println("Building UV Buffer");
+	}
 	
 	public void SetNormals(float[] _normals) {
 		currentModel.Bind();
@@ -101,14 +126,39 @@ public abstract class RenderPipeline {
 		System.err.println("Building Position Buffer");
 	}
 	
+	public void SetVertexData(VertexData _data) {
+		currentData = _data;
+	}
+	
 	public void DrawMesh() {
 		if(indicesBuffer != null && positionBuffer != null) {
 			currentModel.Bind();
 			pipeline.Bind();
+			Matrix4f mvp = new Matrix4f();
+			mvp = mvp.mul(proj);
+			mvp = mvp.mul(view);
+			mvp = mvp.mul(model);
+			pipeline.SetValue("u_MVP", mvp);
+			pipeline.SetValue("u_WorldMat", model);
 			glDrawElements(mode, indicesBuffer.length, NM_UINT32, 0);
 		} else {
 			throw new RuntimeException("Index Buffer OR Position Buffer has not been setup!");
 		}
+	}
+	
+	public void EnableDepth() {
+		glEnable(GL_DEPTH_TEST);
+		usesDepth = true;
+	}
+	
+	public void EnableBackFaceCullingCCW() {
+		glEnable(GL_CULL_FACE);
+		glFrontFace(GL_CCW);
+	}
+	
+	public void EnableBackFaceCullingCW() {
+		glEnable(GL_CULL_FACE);
+		glFrontFace(GL_CW);
 	}
 	
 	public void DrawMesh(float[] _vertexPositions) {
@@ -116,8 +166,29 @@ public abstract class RenderPipeline {
 		DrawMesh();
 	}
 	
+	public void DrawMesh(MeshData _data) {
+		if(_data == null) return;
+		if(!currentData.equals(_data.GetVertexData())) {
+			VertexData _vertData = _data.GetVertexData();
+		
+			SetAlbedo(_data.GetAlbedo());
+			SetNormals(_vertData.getNormals());
+			SetVertexPositions(_vertData.getVertexPositions());
+			SetTextureCoords(_vertData.getTextureCoords());
+			SetIndices(_vertData.getIndices());
+			currentData = _vertData;
+		}
+		
+		SetValue("u_TintColor", Color.white);
+		DrawMesh();
+	}
+	
 	public void Clear(Color c) {
-		glClear(GL_COLOR_BUFFER_BIT);
+		if(usesDepth) {
+			glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+		} else {
+			glClear(GL_COLOR_BUFFER_BIT);
+		}
 		glClearColor(c.getRed() / 255f, c.getGreen() / 255f, c.getBlue() / 255f, c.getAlpha() / 255f);
 	}
 	
@@ -142,12 +213,29 @@ public abstract class RenderPipeline {
 	
 	//=======================================================================================================================
 	
-	public void SetValue(String name, Color c) {}
-	public void SetValue(String name, Texture2D texture, int slot) {}
+	public void SetValue(String name, Color c) {
+		pipeline.Bind();
+		pipeline.SetValue(name, new Vector4f(c.getRed() / 255f, c.getGreen() / 255f, c.getBlue() / 255f, c.getAlpha() / 255f));
+	}
+	public void SetValue(String name, Texture2D texture, int slot) {
+		pipeline.Bind();
+		texture.Bind();
+		texture.SetSlot(slot);
+		pipeline.SetValue(name, slot);
+	}
 	
 	//=======================================================================================================================
 	
 	private void Flush() {}
 	private void Reset() {}
+	
+	public void Destroy() {
+		if(positionBuffer != null) positionBuffer.Delete();
+		if(normalBuffer != null) normalBuffer.Delete();
+		if(texCoordBuffer != null) texCoordBuffer.Delete();
+		if(indicesBuffer != null) indicesBuffer.Delete();
+		if(currentModel != null) currentModel.Delete();
+		if(pipeline != null) pipeline.Delete();
+	}
 	
 }

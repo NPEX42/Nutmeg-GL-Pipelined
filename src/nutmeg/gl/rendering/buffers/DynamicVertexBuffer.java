@@ -2,6 +2,7 @@ package nutmeg.gl.rendering.buffers;
 
 import static org.lwjgl.opengl.GL46.*;
 @Deprecated
+@SuppressWarnings("unused")
 public class DynamicVertexBuffer {
 	private int index, id, size;
 	private DynamicVertexBuffer(int _index, int _id, int _size) {
