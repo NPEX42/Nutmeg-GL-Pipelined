@@ -56,6 +56,8 @@ public abstract class Application3D extends Application {
 		moveDir = moveDir.mul(cameraRotMat);
 		
 		forwardVector = new Vector3f(moveDir.x, moveDir.y,moveDir.z);
+		
+		pipe.SetPerspective(DisplayManager.getWidth(), DisplayManager.getHeight(), 70f, 0.3f, -100f);
 	}
 	
 	public void Rotate(float _x, float _y, float _z) {

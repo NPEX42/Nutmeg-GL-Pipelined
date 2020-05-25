@@ -5,5 +5,10 @@ in vec2 v_UV;
 uniform sampler2D t_Albedo;
 
 void main() {
-	v_PixelColor = texture(t_Albedo,v_UV) * u_TintColor;
+	vec4 texColor = texture(t_Albedo,v_UV);
+	if(texColor.a < 1) {
+		discard;
+	} else {
+		v_PixelColor = texture(t_Albedo,v_UV) * u_TintColor;
+	}
 }

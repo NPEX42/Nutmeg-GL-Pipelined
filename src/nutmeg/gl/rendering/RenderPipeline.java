@@ -41,7 +41,8 @@ public abstract class RenderPipeline {
 	protected VertexBuffer 
 		positionBuffer,
 		texCoordBuffer,
-		normalBuffer;
+		normalBuffer,
+		colorBuffer;
 	
 	protected IndexBuffer indicesBuffer;
 	
@@ -124,6 +125,21 @@ public abstract class RenderPipeline {
 		if(positionBuffer != null) positionBuffer.Delete();
 		positionBuffer = VertexBuffer.Create(0, _vertices, NM_VEC3);
 		System.err.println("Building Position Buffer");
+	}
+	
+	public void SetVertexColors(Color[] _c) {
+		currentModel.Bind();
+		if(colorBuffer != null) colorBuffer.Delete();
+		float[] colorsRGBA = new float[_c.length * NM_RGBA];
+		int idx = 0;
+		for(Color c : _c) {
+			colorsRGBA[idx++] = c.getRed  () / 255f;
+			colorsRGBA[idx++] = c.getGreen() / 255f;
+			colorsRGBA[idx++] = c.getBlue () / 255f;
+			colorsRGBA[idx++] = c.getAlpha() / 255f;
+		}
+		colorBuffer = VertexBuffer.Create(NM_COLOR, colorsRGBA, NM_RGBA);
+		System.err.println("Building Color Buffer");
 	}
 	
 	public void SetVertexData(VertexData _data) {

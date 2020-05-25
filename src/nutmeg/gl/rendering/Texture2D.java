@@ -59,6 +59,9 @@ public class Texture2D {
 		data = stbi_load(filePath, width, height, channels, NM_RGBA);
 		tp2 = System.currentTimeMillis();
 		System.err.println("Texture Loaded In "+(tp2 - tp1)+"ms");
+		
+		if(data == null) return null;
+		
 		return LoadRGBA8(data, width[0], height[0]);
 	}
 	

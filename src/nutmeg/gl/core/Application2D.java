@@ -52,4 +52,12 @@ public abstract class Application2D extends Application{
 		pipeline.Clear(color);
 	}
 	
+	public void Delay(int milliseconds) {
+		try { Thread.sleep(milliseconds); } catch(InterruptedException inex) {}
+	}
+	
+	public String GetThreadName() {
+		return Thread.currentThread().getName();
+	}
+	
 }

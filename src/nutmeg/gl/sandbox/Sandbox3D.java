@@ -19,7 +19,7 @@ public class Sandbox3D extends Application3D {
 	
 	@Override
 	public boolean OnUserCreate() {
-		monkey = IO.loadMeshData("res/models/quad.mesh");
+		monkey = new MeshData(IO.loadOBJ("res/models/cube.obj"));
 		Translate(0, 0, -10);
 		Scale(100, 100, 1);
 		//SetGlobalLightDir(0, 0, -1);
@@ -29,7 +29,7 @@ public class Sandbox3D extends Application3D {
 	@Override
 	public boolean OnUserUpdate() {
 		Background(Color.orange);
-		//Rotate(0, 1 * Time.GetDeltaTime(), 0);
+		Rotate(0, 1 * Time.GetDeltaTime(), 0);
 		
 //		if(Keyboard.isKeyPressed('A')) TranslateCamera(-1 * MOVE_SPEED * Time.GetDeltaTime(), 0, 0);
 //		if(Keyboard.isKeyPressed('D')) TranslateCamera( 1 * MOVE_SPEED * Time.GetDeltaTime(), 0, 0);
