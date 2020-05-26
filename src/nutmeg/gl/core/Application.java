@@ -20,6 +20,7 @@ public abstract class Application {
 		if(!OnUserCreate()) { DisplayManager.Close(); System.exit(-1); } 
 		while(DisplayManager.DisplayIsActive()) {
 			tp1 = System.currentTimeMillis();
+			OnApplicationUpdate();
 			if(!OnUserUpdate()) break;
 			DisplayManager.Update();
 			tp2 = System.currentTimeMillis();
@@ -56,4 +57,5 @@ public abstract class Application {
 	
 	public abstract boolean OnApplicationInit();
 	public abstract boolean OnApplicationDestroy();
+	public abstract boolean OnApplicationUpdate();
 }

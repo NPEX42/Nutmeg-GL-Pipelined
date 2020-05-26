@@ -9,7 +9,7 @@ import org.lwjgl.system.MemoryUtil;
 import nutmeg.gl.core.window.DisplayManager;
 import nutmeg.gl.rendering.buffers.IndexBuffer;
 import nutmeg.gl.rendering.buffers.VertexBuffer;
-public class RenderPipeline2D extends RenderPipeline {
+public class RenderPipeline2D extends RenderPipeline{
 	
 	Texture2D white, missing;
 	
@@ -45,7 +45,6 @@ public class RenderPipeline2D extends RenderPipeline {
 	@Override
 	public void Clear(Color c) {
 		super.Clear(c);
-		SetOrthographic(DisplayManager.getWidth(), DisplayManager.getHeight(), 1, -1);
 	}
 	
 	public void Clear(Texture2D background) {
@@ -128,6 +127,18 @@ public class RenderPipeline2D extends RenderPipeline {
 		SetTransform(x, y, 0, 0, 0, 0, w, h, 1);
 		DrawMesh();
 		SetTextureCoords(textureCoords);
+	}
+	@Deprecated
+	public void DrawBatchedQuad(float x, float y, float w, float h, Color c) {
+		float[] pos = {
+				x    , y    , 0,
+				x + w, y    , 0,
+				x + w, y + h, 0,
+				x    , y + h, 0
+				
+		};
+		
+		//Submit(indices, pos, textureCoords, new float[] {0, 0, 1});
 	}
 
 }

@@ -53,7 +53,7 @@ public abstract class RenderPipeline {
 		//pipeline = ShaderPipeline.BuildFromExtFile("res/shaders/geom.v.glsl", "res/shaders/geom.f.glsl");
 		pipeline = ShaderPipeline.BuildFromIntFile(RenderPipeline.class.getClassLoader(), _shaderPaths[0], _shaderPaths[1]);
 		if(pipeline == null) pipeline = ShaderPipeline.BuildFromExtFile(_shaderPaths[0], _shaderPaths[1]);
-		if(pipeline == null) System.err.println("Unable To Create Shader from " +_shaderPaths[0] + " (VS) and  "+ _shaderPaths[1] + " (FS)");
+		if(pipeline == null) { System.err.println("Unable To Create Shader from " +_shaderPaths[0] + " (VS) and  "+ _shaderPaths[1] + " (FS)"); System.exit(-1);}
 		
 		proj = new Matrix4f();
 		model = new Matrix4f();

@@ -28,7 +28,9 @@ public class Sandbox2D extends Application2D {
 		Background(Color.GRAY);
 		SetTitle("Nutmeg-GL - "+smoothFrameRate+" fps - MX: "+Mouse.GetMouseX()+" - MY: "+Mouse.GetMouseY()+" - Thread: "+GetThreadName());
 		Delay(1);
-		DrawRect(width / 2,height - image.GetHeight(), 256, 256, image);
+		for(int i = 0; i < 1000; i++) {
+			DrawRect(Mouse.GetMouseX(), Mouse.GetMouseY(), 256, 256, Color.ORANGE);
+		}
 		return true;
 	}
 

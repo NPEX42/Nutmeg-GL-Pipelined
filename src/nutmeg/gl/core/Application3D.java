@@ -27,6 +27,10 @@ public abstract class Application3D extends Application {
 		pipe.EnableBackFaceCullingCCW();
 		return true;
 	}
+	
+	public boolean OnApplicationUpdate() {
+		return true;
+	}
 
 	@Override
 	public boolean OnApplicationDestroy() {

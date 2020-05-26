@@ -21,6 +21,12 @@ public abstract class Application2D extends Application{
 		return true;
 	}
 	
+	public boolean OnApplicationUpdate() {
+		//pipeline.Flush();
+		pipeline.SetOrthographic(DisplayManager.getWidth(), DisplayManager.getHeight(), 1, -1);
+		return true;
+	}
+	
 	public boolean OnApplicationDestroy() {
 		pipeline.Destroy();
 		return true;
